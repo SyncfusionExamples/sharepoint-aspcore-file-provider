@@ -22,7 +22,7 @@ namespace SharePointASPCoreFileProvider.Controllers
             this.operation = new SharePointProvider();
             this.operation.userSiteName = "<--User Site Name-->";
 			this.operation.userDriveId = "<--User Drive ID-->";
-			this.operation.RegisterSharePoint("tenantId", "clintId", "clientSecret");
+			this.operation.RegisterSharePoint("tenantId", "clientId", "clientSecret");
         }
 
         [Route("SharePointFileOperations")]
