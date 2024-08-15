@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 
 
-namespace Syncfusion.EJ2.FileManager.Base
+namespace Syncfusion.Web.FileManager.Base
 {
     public class FileManagerDirectoryContent
     {
@@ -31,7 +31,7 @@ namespace Syncfusion.EJ2.FileManager.Base
 
         public string Type { get; set; }
 
-        public string Id { get; set; } = string.Empty;
+        public string Id { get; set; }
 
         public string FilterPath { get; set; }
 

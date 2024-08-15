@@ -2,8 +2,7 @@
 using Microsoft.Graph;
 using Azure.Identity;
 using Microsoft.Graph.Models;
-using Syncfusion.EJ2.FileManager.Base;
-using System.Text.Json;
+using Syncfusion.Web.FileManager.Base;
 using System.IO;
 using Microsoft.Graph.Drives.Item.Items.Item.Copy;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace SharePointASPCoreFileProvider.Models
 {
@@ -265,7 +266,7 @@ namespace SharePointASPCoreFileProvider.Models
 				await GetSharePointDrive();
 			}
 			FileManagerResponse detailsResponse = new FileManagerResponse();
-			Syncfusion.EJ2.FileManager.Base.FileDetails detailFiles = new Syncfusion.EJ2.FileManager.Base.FileDetails();
+			Syncfusion.Web.FileManager.Base.FileDetails detailFiles = new Syncfusion.Web.FileManager.Base.FileDetails();
 			try
 			{
 				if(data.Length == 0 || data.Length == 1)
@@ -822,12 +823,12 @@ namespace SharePointASPCoreFileProvider.Models
 			}
 		}
 
-		public virtual FileStreamResult GetImage(string path, string id, bool allowCompress, ImageSize size, params FileManagerDirectoryContent[] data)
+		public virtual FileStreamResult GetImage(string path, string id, bool allowCompress, params FileManagerDirectoryContent[] data)
 		{
-			return this.GetImageAsync(path, id, allowCompress, size, data).Result;
+			return this.GetImageAsync(path, id, allowCompress, data).Result;
 		}
 
-		public async Task<FileStreamResult> GetImageAsync(string path, string id, bool allowCompress, ImageSize size, params FileManagerDirectoryContent[] data)
+		public async Task<FileStreamResult> GetImageAsync(string path, string id, bool allowCompress, params FileManagerDirectoryContent[] data)
 		{
 			if (string.IsNullOrEmpty(userDriveId))
 			{
@@ -1081,19 +1082,20 @@ namespace SharePointASPCoreFileProvider.Models
 			return filePermission;
 		}
 
-		protected virtual bool HasPermission(Syncfusion.EJ2.FileManager.Base.Permission rule)
+		protected virtual bool HasPermission(Syncfusion.Web.FileManager.Base.Permission rule)
 		{
-			return rule == Syncfusion.EJ2.FileManager.Base.Permission.Allow ? true : false;
+			return rule == Syncfusion.Web.FileManager.Base.Permission.Allow ? true : false;
 		}
 
 		public string ToCamelCase(FileManagerResponse userData)
 		{
-			JsonSerializerOptions options = new JsonSerializerOptions
-			{
-				PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-			};
-
-			return JsonSerializer.Serialize(userData, options);
-		}
+            return JsonConvert.SerializeObject(userData, new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                }
+            });
+        }
 	}
 }

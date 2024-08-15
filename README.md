@@ -33,18 +33,26 @@ To set up the SharePoint service provider, follow these steps:
    - With the obtained Tenant ID, Client ID, and Client Secret, you can create a Microsoft Graph instance.
    - This instance will be used to interact with the SharePoint document library.
 
-3. **Initialize the SharePoint Service in the Controller:**
-   - In the `SharePointController` constructor, initialize the `SharePointProvider` and set the user site name and user drive ID.
-   - Register the SharePoint service with the following code:
+3. **Use Details from `appsettings.json`:**
+   - The `SharePointController` is already configured to use the credentials provided in the `appsettings.json` file.
+   - You only need to provide your `Tenant ID`, `Client ID`, `Client Secret`, `User Site Name`, and `User Drive ID` in the `appsettings.json` file, and the application will automatically initialize the SharePoint service.
 
-   ```csharp
-   public SharePointController()
-   {
-       this.operation = new SharePointProvider();
-       this.operation.userSiteName = "<--User Site Name-->";
-       this.operation.userDriveId = "<--User Drive ID-->";
-       this.operation.RegisterSharePoint("tenantId", "clientId", "clientSecret");
-   }
+   ### Example `appsettings.json` Configuration
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "tenantId": "<--Tenant Id-->",
+  "clientId": "<--Client Id-->",
+  "clientSecret": "<--Client Secret-->",
+  "userSiteName": "<--User Site Name-->",
+  "userDriveId": "<--User Drive ID-->",
+  "AllowedHosts": "*"
+}
 
 Replace "<--User Site Name-->", "<--User Drive ID-->", "tenantId", "clientId", and "clientSecret" with your actual values.
 

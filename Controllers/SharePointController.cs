@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Syncfusion.EJ2.FileManager.Base;
-using System.Text.Json;
+using Syncfusion.Web.FileManager.Base;
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace SharePointASPCoreFileProvider.Controllers
 {
@@ -17,13 +17,13 @@ namespace SharePointASPCoreFileProvider.Controllers
     {
         public SharePointProvider operation;
 
-        public SharePointController()
+        public SharePointController(IConfiguration configuration)
         {
-            this.operation = new SharePointProvider();
-            this.operation.userSiteName = "<--User Site Name-->";
-			this.operation.userDriveId = "<--User Drive ID-->";
-			this.operation.RegisterSharePoint("tenantId", "clientId", "clientSecret");
-        }
+			this.operation = new SharePointProvider();
+			this.operation.userSiteName = configuration["userSiteName"];
+			this.operation.userDriveId = configuration["userDriveId"];
+			this.operation.RegisterSharePoint(configuration["tenantId"], configuration["clientId"], configuration["clientSecret"]);
+		}
 
         [Route("SharePointFileOperations")]
         public object FileOperations([FromBody] FileManagerDirectoryContent args)
@@ -72,12 +72,8 @@ namespace SharePointASPCoreFileProvider.Controllers
 		{
 			FileManagerResponse uploadResponse;
 			FileManagerDirectoryContent[] dataObject = new FileManagerDirectoryContent[1];
-			var options = new JsonSerializerOptions
-			{
-				PropertyNamingPolicy = null,
-			};
-			dataObject[0] = JsonSerializer.Deserialize<FileManagerDirectoryContent>(data, options);
-			uploadResponse = this.operation.Upload(path, uploadFiles, action, dataObject);
+			dataObject[0] = JsonConvert.DeserializeObject<FileManagerDirectoryContent>(data);
+            uploadResponse = this.operation.Upload(path, uploadFiles, action, dataObject);
 			if (uploadResponse.Error != null)
 			{
 				Response.Clear();
@@ -91,18 +87,14 @@ namespace SharePointASPCoreFileProvider.Controllers
 		[Route("SharePointDownload")]
 		public IActionResult Download(string downloadInput)
 		{
-			var options = new JsonSerializerOptions
-			{
-				PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-			};
-			FileManagerDirectoryContent args = JsonSerializer.Deserialize<FileManagerDirectoryContent>(downloadInput, options);
-			return this.operation.Download(args.Path, args.Names, args.Data);
+            FileManagerDirectoryContent args = JsonConvert.DeserializeObject<FileManagerDirectoryContent>(downloadInput);
+            return this.operation.Download(args.Path, args.Names, args.Data);
 		}
 
         [Route("SharePointGetImage")]
         public IActionResult GetImage(FileManagerDirectoryContent args)
         {
-			return this.operation.GetImage(args.Path, args.Id, false, null, args.Data);
+			return this.operation.GetImage(args.Path, args.Id, false, args.Data);
         }
     }
 }
